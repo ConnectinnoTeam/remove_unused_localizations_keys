@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:yaml/yaml.dart';
 
 /// Scans the project for unused localization keys and removes them from `.arb` files.
@@ -75,6 +76,7 @@ void runLocalizationCleaner({
 
   final Set<String> usedKeys = <String>{};
   final Directory libDir = Directory('lib');
+  final Directory moduleDir = Directory('module');
 
   final String keysPattern = allKeys.map(RegExp.escape).join('|');
 
@@ -103,7 +105,10 @@ void runLocalizationCleaner({
           dotAll: true,
         );
 
-  for (final FileSystemEntity file in libDir.listSync(recursive: true)) {
+  for (final FileSystemEntity file in [
+    ...libDir.listSync(recursive: true),
+    ...moduleDir.listSync(recursive: true)
+  ]) {
     if (file is File &&
         file.path.endsWith('.dart') &&
         !excludedFiles.contains(file.path)) {

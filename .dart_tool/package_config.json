@@ -3,37 +3,37 @@
   "packages": [
     {
       "name": "collection",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/collection-1.19.1",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "path",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/path-1.9.1",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/path-1.9.1",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
     {
       "name": "source_span",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/source_span-1.10.1",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/source_span-1.10.1",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
     {
       "name": "string_scanner",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/string_scanner-1.4.1",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/string_scanner-1.4.1",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
     {
       "name": "term_glyph",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/term_glyph-1.2.2",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/term_glyph-1.2.2",
       "packageUri": "lib/",
       "languageVersion": "3.1"
     },
     {
       "name": "yaml",
-      "rootUri": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache/hosted/pub.dev/yaml-3.1.3",
+      "rootUri": "file:///Users/gorkemtopcu/.pub-cache/hosted/pub.dev/yaml-3.1.3",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -44,10 +44,9 @@
       "languageVersion": "3.0"
     }
   ],
-  "generated": "2025-04-11T12:03:14.560598Z",
   "generator": "pub",
-  "generatorVersion": "3.7.2",
-  "flutterRoot": "file:///C:/tools/flutter",
-  "flutterVersion": "3.29.2",
-  "pubCache": "file:///C:/Users/Abdo/AppData/Local/Pub/Cache"
+  "generatorVersion": "3.9.2",
+  "flutterRoot": "file:///Users/gorkemtopcu/flutter",
+  "flutterVersion": "3.35.7",
+  "pubCache": "file:///Users/gorkemtopcu/.pub-cache"
 }
