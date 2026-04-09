@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'easy_localization_json.dart';
 import 'package:yaml/yaml.dart';
 
 /// Scans the project for unused localization keys and removes them from `.arb` files.
@@ -40,7 +41,9 @@ void runLocalizationCleaner({
   if (useEasyLocalization) {
     localizationDir = Directory(easyLocalizationPath ?? 'assets/translations');
     if (!localizationDir.existsSync()) {
-      log('Error: ${localizationDir.path} directory not found for easy_localization!');
+      log(
+        'Error: ${localizationDir.path} directory not found for easy_localization!',
+      );
       return;
     }
   }
@@ -48,13 +51,17 @@ void runLocalizationCleaner({
   final List<File> localizationFiles = localizationDir
       .listSync()
       .whereType<File>()
-      .where((file) => useEasyLocalization
-          ? file.path.endsWith('.json')
-          : file.path.endsWith('.arb'))
+      .where(
+        (file) => useEasyLocalization
+            ? file.path.endsWith('.json')
+            : file.path.endsWith('.arb'),
+      )
       .toList();
 
   if (localizationFiles.isEmpty) {
-    log('No ${useEasyLocalization ? ".json" : ".arb"} files found in ${localizationDir.path}');
+    log(
+      'No ${useEasyLocalization ? ".json" : ".arb"} files found in ${localizationDir.path}',
+    );
     return;
   }
 
@@ -66,10 +73,10 @@ void runLocalizationCleaner({
     final Map<String, dynamic> data =
         json.decode(file.readAsStringSync()) as Map<String, dynamic>;
     final Set<String> keys = useEasyLocalization
-        ? data.keys.toSet() // For JSON files, all keys are valid
+        ? collectEasyLocalizationFlatKeys(data)
         : data.keys
-            .where((key) => !key.startsWith('@'))
-            .toSet(); // For ARB files, exclude metadata
+              .where((key) => !key.startsWith('@'))
+              .toSet(); // For ARB files, exclude metadata
     allKeys.addAll(keys);
     fileKeyMap[file] = keys;
   }
@@ -78,7 +85,10 @@ void runLocalizationCleaner({
   final Directory libDir = Directory('lib');
   final Directory moduleDir = Directory('module');
 
-  final String keysPattern = allKeys.map(RegExp.escape).join('|');
+  // Longer keys first so `general_continue` wins over `general` in alternation.
+  final List<String> keysForPattern = allKeys.toList()
+    ..sort((String a, String b) => b.length.compareTo(a.length));
+  final String keysPattern = keysForPattern.map(RegExp.escape).join('|');
 
   // Create appropriate regex based on mode
   final RegExp regex = useEasyLocalization
@@ -89,7 +99,8 @@ void runLocalizationCleaner({
           'tr\\([\'"]($keysPattern)[\'"]\\)|' // tr('key')
           '[\'"]($keysPattern)[\'"]\\.tr\\([^)]*\\)', // "key".tr() or 'key'.tr()
           multiLine: true,
-          dotAll: true)
+          dotAll: true,
+        )
       : RegExp(
           r'(?:' // Start non-capturing group for all possible access patterns
                   r'(?:[a-zA-Z0-9_]+\s*\.)+' // e.g., `_appLocalizations.` or `cubit.appLocalizations.` with optional whitespace before the dot
@@ -107,7 +118,7 @@ void runLocalizationCleaner({
 
   for (final FileSystemEntity file in [
     ...libDir.listSync(recursive: true),
-    ...moduleDir.listSync(recursive: true)
+    if (moduleDir.existsSync()) ...moduleDir.listSync(recursive: true),
   ]) {
     if (file is File &&
         file.path.endsWith('.dart') &&
@@ -120,7 +131,8 @@ void runLocalizationCleaner({
       for (final Match match in regex.allMatches(content)) {
         if (useEasyLocalization) {
           // For easy_localization, check all capture groups
-          final String? key = match.group(1) ??
+          final String? key =
+              match.group(1) ??
               match.group(2) ??
               match.group(3) ??
               match.group(4);
@@ -152,18 +164,19 @@ void runLocalizationCleaner({
     // Remove unused keys from all localization files
     for (final MapEntry<File, Set<String>> entry in fileKeyMap.entries) {
       final File file = entry.key;
-      final Set<String> keys = entry.value;
       final Map<String, dynamic> data =
           json.decode(file.readAsStringSync()) as Map<String, dynamic>;
 
       bool updated = false;
-      for (final key in keys) {
-        if (unusedKeys.contains(key)) {
-          data.remove(key);
-          if (!useEasyLocalization) {
+      if (useEasyLocalization) {
+        updated = removeUnusedLeavesFromNestedJson(data, '', unusedKeys);
+      } else {
+        for (final String key in entry.value) {
+          if (unusedKeys.contains(key)) {
+            data.remove(key);
             data.remove('@$key'); // Only remove metadata for ARB files
+            updated = true;
           }
-          updated = true;
         }
       }
 
