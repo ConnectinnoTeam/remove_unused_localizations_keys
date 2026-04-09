@@ -169,7 +169,7 @@ void runLocalizationCleaner({
 
       if (updated) {
         file.writeAsStringSync(
-          const JsonEncoder.withIndent('  ').convert(data),
+          const JsonEncoder.withIndent('    ').convert(data),
         );
         log('Updated ${file.path}, removed unused keys.');
       }
